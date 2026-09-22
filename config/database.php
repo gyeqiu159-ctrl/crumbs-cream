@@ -12,11 +12,11 @@
  * See README.md for the full step-by-step Laragon setup guide.
  */
 
-define('DB_HOST', '127.0.0.1');
-define('DB_PORT', '3306');
-define('DB_NAME', 'crumb_and_cream');
-define('DB_USER', 'root');
-define('DB_PASS', '');
+define('DB_HOST', 'db.rvczheosfccszngbwnuf.supabase.co');
+define('DB_PORT', '5432');
+define('DB_NAME', 'postgres');
+define('DB_USER', 'postgres');
+define('DB_PASS', '65cx9f4SI2D7170Y'); // <--- ENTER YOUR PASSWORD HERE
 
 /**
  * Returns a PDO connection, or null if the database is unreachable.
@@ -39,7 +39,8 @@ function get_db_connection(): ?PDO
 
     $attempted = true;
 
-    $dsn = 'mysql:host=' . DB_HOST . ';port=' . DB_PORT . ';dbname=' . DB_NAME . ';charset=utf8mb4';
+    // Notice we use pgsql: here instead of mysql:
+    $dsn = 'pgsql:host=' . DB_HOST . ';port=' . DB_PORT . ';dbname=' . DB_NAME;
 
     try {
         $pdo = new PDO($dsn, DB_USER, DB_PASS, [
