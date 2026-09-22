@@ -65,15 +65,6 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   });
 
-  /* -------------------- Product Size Selector -------------------- */
-  var sizeOptions = document.querySelectorAll('.size-option');
-
-  sizeOptions.forEach(function (option) {
-    option.addEventListener('click', function () {
-      sizeOptions.forEach(function (o) { o.classList.remove('active'); });
-      option.classList.add('active');
-    });
-  });
 
   /* -------------------- Quantity Selector (visual only) -------------------- */
   var qtyValue = document.getElementById('qtyValue');
@@ -180,5 +171,26 @@ document.addEventListener('DOMContentLoaded', function () {
       updateCarousel();
     });
   });
+
+  /* -------------------- Terms and Conditions Modal -------------------- */
+  var modal = document.getElementById("termsModal");
+  var btn = document.getElementById("openTermsModal");
+  var span = document.querySelector(".modal-close");
+
+  if (btn && modal && span) {
+    btn.onclick = function() {
+      modal.style.display = "block";
+    }
+
+    span.onclick = function() {
+      modal.style.display = "none";
+    }
+
+    window.onclick = function(event) {
+      if (event.target == modal) {
+        modal.style.display = "none";
+      }
+    }
+  }
 
 });

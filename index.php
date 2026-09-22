@@ -4,16 +4,11 @@ $site = [
     'brand'       => 'Crumb & Cream',
     'tagline'     => 'Sweet moments, one bite at a time.',
     'year'        => date('Y'),
-];  
+];
 
 $product = [
     'name'        => 'Graham Bars',
     'price_from'  => '30.00',
-    'sizes'       => [
-        ['label' => '1 Pieces',  'price' => '30.00'],
-        ['label' => '2 Pieces',  'price' => '60.00'],
-        ['label' => '4 Pieces', 'price' => '120.00'],
-    ],
     'flavors'     => [
         ['label' => 'Mango', 'description' => 'A tropical burst of flavor'],
         ['label' => 'Milo Flavor', 'description' => 'Rich chocolate malt taste'],
@@ -50,15 +45,16 @@ function get_flavor_image($flavor_label) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['order_inquiry'])) {
     $name        = trim($_POST['customer_name'] ?? '');
     $contactInfo = trim($_POST['contact_info'] ?? '');
-    $size        = trim($_POST['order_size'] ?? '');
+    $payment     = trim($_POST['order_payment'] ?? '');
     $flavor      = trim($_POST['order_flavor'] ?? '');
     $qty         = (int) ($_POST['order_qty'] ?? 1);
     $message     = trim($_POST['order_message'] ?? '');
+    $terms       = isset($_POST['terms_accepted']);
 
-    if ($name === '' || $contactInfo === '' || $size === '' || $flavor === '') {
+    if ($name === '' || $contactInfo === '' || $payment === '' || $flavor === '' || !$terms) {
         $orderFeedback = [
             'type'    => 'error',
-            'message' => 'Please fill in your name, contact info, size, and flavor before submitting.',
+            'message' => 'Please fill in your name, contact info, payment method, flavor, and accept the Terms and Conditions before submitting.',
         ];
     } else {
         $qty = max(1, min(50, $qty));
@@ -71,8 +67,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['order_inquiry'])) {
             ];
         } else {
             try {
-                $unitPrice = get_size_price($size);
-                $amount    = $unitPrice !== null ? $unitPrice * $qty : null;
+                $unitPrice = 30.00; // Fixed unit price since sizes are removed
+                $amount    = $unitPrice * $qty;
+                $size      = 'Standard'; // Hardcoded size to avoid DB errors
+                $finalMessage = ($message !== '' ? $message . ' | ' : '') . 'Payment: ' . $payment;
 
                 $stmt = $pdo->prepare(
                     'INSERT INTO orders (customer_name, contact_info, size, flavor, quantity, message, amount)
@@ -84,7 +82,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['order_inquiry'])) {
                     ':size'    => $size,
                     ':flavor'  => $flavor,
                     ':qty'     => $qty,
-                    ':message' => $message !== '' ? $message : null,
+                    ':message' => $finalMessage,
                     ':amount'  => $amount,
                 ]);
                 $newOrderId = (int) $pdo->lastInsertId();
@@ -95,7 +93,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['order_inquiry'])) {
                 ];
                 // Clear submitted values after a successful save.
                 $name = $contactInfo = $message = '';
-                $size = $flavor = '';
+                $payment = $flavor = '';
                 $qty = 1;
             } catch (PDOException $e) {
                 error_log('Order insert failed: ' . $e->getMessage());
@@ -132,7 +130,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['order_inquiry'])) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer">
 
     <!-- Styles -->
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/style.css?v=<?php echo time(); ?>">
     <link rel="icon" href="images/image-removebg-preview (1).svg" type="image/svg+xml">
 </head>
 <body>
@@ -296,14 +294,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['order_inquiry'])) {
                 <h2><?php echo htmlspecialchars($product['name']); ?></h2>
                 <p>Layers of buttery graham crust hugging a smooth, creamy filling — sliced into bars and ready whenever a craving hits. Every batch is made fresh, never rushed.</p>
 
-                <span class="size-label">Available Sizes</span>
-                <div class="size-options" id="sizeOptions">
-                    <?php foreach ($product['sizes'] as $i => $size): ?>
-                        <button type="button" class="size-option<?php echo $i === 0 ? ' active' : ''; ?>" data-price="<?php echo htmlspecialchars($size['price']); ?>">
-                            <?php echo htmlspecialchars($size['label']); ?>
-                        </button>
-                    <?php endforeach; ?>
-                </div>
+
 
                 <div class="qty-row">
                     <span class="qty-label">Quantity</span>
@@ -391,27 +382,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['order_inquiry'])) {
 
             <div class="review-grid">
                 <div class="review-card reveal">
-                    <div class="stars"></div>
-                    <p>"Blank"</p>
+                    <div class="stars">★★★★★</div>
+                    <p>"Super creamy and delicious! The graham layers give it the perfect crunch."</p>
                     <div class="reviewer">
                         <div class="reviewer-avatar">M</div>
-                        <div class="reviewer-name">Blank...</div>
+                        <div class="reviewer-name">Maria</div>
                     </div>
                 </div>
                 <div class="review-card reveal reveal-delay-1">
-                    <div class="stars"></div>
-                    <p>"Blank"</p>
+                    <div class="stars">★★★★★</div>
+                    <p>"Perfect for merienda! Will definitely order again."</p>
                     <div class="reviewer">
                         <div class="reviewer-avatar">A</div>
-                        <div class="reviewer-name">Blank...</div>
+                        <div class="reviewer-name">Angela</div>
                     </div>
                 </div>
                 <div class="review-card reveal reveal-delay-2">
-                    <div class="stars"></div>
-                    <p>"Blank"</p>
+                    <div class="stars">★★★★★</div>
+                    <p>"Simple, affordable, and really tasty!"</p>
                     <div class="reviewer">
                         <div class="reviewer-avatar">J</div>
-                        <div class="reviewer-name">Blank...</div>
+                        <div class="reviewer-name">John</div>
                     </div>
                 </div>
             </div>
@@ -543,18 +534,119 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['order_inquiry'])) {
                     </div>
 
                     <div class="form-row">
-                        <div class="form-group">
-                            <label for="order_size">Size</label>
-                            <select id="order_size" name="order_size" required>
-                                <option value="">Select size</option>
-                                <?php foreach ($product['sizes'] as $sizeOption): ?>
-                                    <option value="<?php echo htmlspecialchars($sizeOption['label']); ?>"
-                                        <?php echo (isset($size) && $size === $sizeOption['label']) ? 'selected' : ''; ?>>
-                                        <?php echo htmlspecialchars($sizeOption['label']); ?> — ₱<?php echo htmlspecialchars($sizeOption['price']); ?>
-                                    </option>
-                                <?php endforeach; ?>
+                        <style>
+                            .custom-select-wrapper { position: relative; user-select: none; margin-top: 4px; }
+                            .custom-select-trigger {
+                                display: flex; justify-content: space-between; align-items: center;
+                                padding: 14px 16px;
+                                background-color: #fff;
+                                border: 1px solid #ccc;
+                                border-radius: var(--radius-sm, 8px);
+                                cursor: pointer;
+                                color: var(--cocoa);
+                                transition: all 0.2s;
+                            }
+                            .custom-select-trigger:focus, .custom-select-wrapper.open .custom-select-trigger {
+                                border-color: var(--caramel);
+                                box-shadow: 0 0 0 3px rgba(199, 125, 74, 0.2);
+                            }
+                            .custom-options {
+                                position: absolute;
+                                top: 100%; left: 0; right: 0;
+                                background: #fff;
+                                border: 1px solid #ccc;
+                                border-top: none;
+                                border-radius: 0 0 var(--radius-sm, 8px) var(--radius-sm, 8px);
+                                box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+                                display: none;
+                                z-index: 10;
+                                overflow: hidden;
+                            }
+                            .custom-select-wrapper.open .custom-options {
+                                display: block;
+                            }
+                            .custom-option {
+                                padding: 12px 16px;
+                                display: flex; align-items: center;
+                                cursor: pointer;
+                                transition: background 0.2s;
+                            }
+                            .custom-option:hover {
+                                background-color: var(--cream, #F4ECE1);
+                            }
+                            .custom-option.selected {
+                                background-color: rgba(199, 125, 74, 0.1);
+                                font-weight: 600;
+                            }
+                            .payment-hidden-input {
+                                position: absolute; opacity: 0; pointer-events: none; height: 1px; width: 1px; bottom: 0;
+                            }
+                        </style>
+
+                        <div class="form-group" style="flex: 1;">
+                            <label style="display:block; margin-bottom:4px;">Payment Method</label>
+                            
+                            <div class="custom-select-wrapper" id="paymentCustomSelect">
+                                <div class="custom-select-trigger">
+                                    <span class="trigger-text">
+                                        <?php if(isset($payment) && $payment === 'Cash'): ?>
+                                            <i class="fa-solid fa-money-bill" style="margin-right: 8px; color: var(--caramel);"></i> Cash
+                                        <?php elseif(isset($payment) && $payment === 'GCash'): ?>
+                                            <i class="fa-solid fa-mobile-screen" style="margin-right: 8px; color: var(--caramel);"></i> GCash
+                                        <?php else: ?>
+                                            Select payment
+                                        <?php endif; ?>
+                                    </span>
+                                    <i class="fa-solid fa-chevron-down"></i>
+                                </div>
+                                <div class="custom-options">
+                                    <div class="custom-option <?php echo (isset($payment) && $payment === 'Cash') ? 'selected' : ''; ?>" data-value="Cash">
+                                        <i class="fa-solid fa-money-bill" style="margin-right: 8px; color: var(--caramel);"></i> Cash
+                                    </div>
+                                    <div class="custom-option <?php echo (isset($payment) && $payment === 'GCash') ? 'selected' : ''; ?>" data-value="GCash">
+                                        <i class="fa-solid fa-mobile-screen" style="margin-right: 8px; color: var(--caramel);"></i> GCash
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Hidden actual select for validation and form submission -->
+                            <select id="order_payment" name="order_payment" class="payment-hidden-input" required>
+                                <option value="">Select payment</option>
+                                <option value="Cash" <?php echo (isset($payment) && $payment === 'Cash') ? 'selected' : ''; ?>>Cash</option>
+                                <option value="GCash" <?php echo (isset($payment) && $payment === 'GCash') ? 'selected' : ''; ?>>GCash</option>
                             </select>
                         </div>
+                        
+                        <script>
+                            document.addEventListener('DOMContentLoaded', function() {
+                                const wrapper = document.getElementById('paymentCustomSelect');
+                                const trigger = wrapper.querySelector('.custom-select-trigger');
+                                const triggerText = wrapper.querySelector('.trigger-text');
+                                const options = wrapper.querySelectorAll('.custom-option');
+                                const hiddenSelect = document.getElementById('order_payment');
+
+                                trigger.addEventListener('click', function(e) {
+                                    wrapper.classList.toggle('open');
+                                    e.stopPropagation();
+                                });
+
+                                options.forEach(option => {
+                                    option.addEventListener('click', function() {
+                                        options.forEach(opt => opt.classList.remove('selected'));
+                                        this.classList.add('selected');
+                                        triggerText.innerHTML = this.innerHTML;
+                                        hiddenSelect.value = this.getAttribute('data-value');
+                                        wrapper.classList.remove('open');
+                                    });
+                                });
+
+                                document.addEventListener('click', function(e) {
+                                    if (!wrapper.contains(e.target)) {
+                                        wrapper.classList.remove('open');
+                                    }
+                                });
+                            });
+                        </script>
 
                         <div class="form-group">
                             <label for="order_flavor">Flavor</label>
@@ -581,7 +673,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['order_inquiry'])) {
                         <textarea id="order_message" name="order_message" rows="3" placeholder="Preferred pickup date, delivery notes, etc."><?php echo htmlspecialchars($message ?? ''); ?></textarea>
                     </div>
 
-                    <button type="submit" name="order_inquiry" value="1" class="btn btn-primary btn-block">Submit Inquiry</button>
+                    <div class="form-group checkbox-group" style="display: flex; align-items: flex-start; gap: 10px; margin-bottom: 24px;">
+                        <input type="checkbox" id="terms_accepted" name="terms_accepted" required style="width: 18px !important; height: 18px !important; margin: 3px 0 0 0 !important; flex-shrink: 0; cursor: pointer; padding: 0;">
+                        <label for="terms_accepted" style="font-weight: normal; color: var(--cocoa-soft); font-size: 0.95rem; cursor: pointer; line-height: 1.4; margin: 0; display: block;">
+                            I agree to the <a href="javascript:void(0)" id="openTermsModal" style="color: var(--caramel); text-decoration: underline;">Terms and Conditions</a>
+                        </label>
+                    </div>
+
+                    <button type="submit" name="order_inquiry" value="1" class="btn btn-primary btn-block">Proceed to Checkout</button>
                 </form>
             </div>
         </div>
@@ -606,6 +705,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['order_inquiry'])) {
                     <li><a href="#reviews">Reviews</a></li>
                     <li><a href="#faq">FAQ</a></li>
                     <li><a href="#contact">Contact</a></li>
+                    <li><a href="terms.php">Terms & Conditions</a></li>
                 </ul>
             </div>
 
@@ -620,10 +720,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['order_inquiry'])) {
         </div>
 
         <div class="container footer-bottom">
-            &copy; <?php echo htmlspecialchars($site['year']); ?> <?php echo htmlspecialchars($site['brand']); ?>. All Rights Reserved.
+            <p>&copy; <?php echo htmlspecialchars($site['year']); ?> <?php echo htmlspecialchars($site['brand']); ?>. All Rights Reserved.</p>
+            <p style="margin-top: 10px; color: rgba(251, 243, 228, 0.9);">Disclaimer: This website is a student project created for educational purposes, operating as a real student-run store.</p>
         </div>
     </footer>
 
-    <script src="js/script.js"></script>
+    <!-- Modal -->
+    <div id="termsModal" class="modal" style="display: none; position: fixed; z-index: 10000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.6);">
+        <div class="modal-content" style="background-color: var(--cream-white, #FFFDF9); margin: 10vh auto; padding: 40px; border-radius: 18px; width: 90%; max-width: 600px; box-shadow: 0 12px 30px -14px rgba(107, 74, 34, 0.25); position: relative;">
+            <span class="modal-close" style="color: #8A6650; position: absolute; right: 24px; top: 16px; font-size: 32px; font-weight: bold; cursor: pointer;">&times;</span>
+            <h2 style="font-family: var(--font-display); color: var(--cocoa); margin-bottom: 20px;">Terms and Conditions</h2>
+            <div class="modal-body">
+                <p><strong>Last Updated: <?php echo date('F j, Y'); ?></strong></p>
+                <div class="alert-box">
+                    <strong>Disclaimer for Educational Purposes:</strong>
+                    This website is a student project created for educational purposes, but it <strong>operates as a real student-run store.</strong> Real transactions can be made and actual products will be provided in accordance with the project's parameters.
+                </div>
+                <h3 style="margin-top:20px; margin-bottom:10px;">1. Acceptance of Terms</h3>
+                <p>By accessing or using this website to browse or place orders, you agree to be bound by these Terms and Conditions. If you do not agree with any part of these terms, please do not use the website.</p>
+                <h3 style="margin-top:20px; margin-bottom:10px;">2. Orders and Purchases</h3>
+                <p>While this is an educational project, orders submitted and payments made are for real physical products fulfilled by the students running this store. By submitting an order inquiry and proceeding with a payment, you agree to complete the purchase.</p>
+                <h3 style="margin-top:20px; margin-bottom:10px;">3. Privacy and Data</h3>
+                <p>Any data submitted via our contact and order forms is used to process your orders and coordinate delivery or pickup. We handle your data responsibly within the scope of our project operations.</p>
+                <h3 style="margin-top:20px; margin-bottom:10px;">4. Cancellations and Refunds</h3>
+                <p>Because products are freshly made to order, cancellations or modifications must be made promptly before your order enters production. Please contact us directly for any issues regarding your order.</p>
+                <h3 style="margin-top:20px; margin-bottom:10px;">5. Limitation of Liability</h3>
+                <p>The creators of this website shall not be held liable for any damages or misunderstandings arising from the use of this site. This is a student-led initiative; we strive for quality and excellent service, but operate under the context of an educational project.</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/script.js?v=<?php echo time(); ?>"></script>
 </body>
 </html>

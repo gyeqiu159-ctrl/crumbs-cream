@@ -1493,3 +1493,69 @@ h4 {
     font-size: 2rem;
   }
 }
+
+/* -------------------- Checkbox & Modal -------------------- */
+.checkbox-group {
+  margin-top: 20px;
+  margin-bottom: 24px;
+}
+.checkbox-group label {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-weight: normal;
+  color: var(--cocoa-soft);
+  font-size: 0.9rem;
+  cursor: pointer;
+  line-height: 1.4;
+}
+.checkbox-group input[type="checkbox"] {
+  width: 16px !important;
+  height: 16px !important;
+  margin: 2px 0 0 0 !important;
+  padding: 0 !important;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.modal {
+  display: none; 
+  position: fixed; 
+  z-index: 10000; 
+  left: 0;
+  top: 0;
+  width: 100%; 
+  height: 100%; 
+  overflow: auto; 
+  background-color: rgba(0,0,0,0.5); 
+}
+.modal-content {
+  background-color: var(--cream-white);
+  margin: 10% auto;
+  padding: 40px;
+  border-radius: var(--radius-md);
+  width: 90%;
+  max-width: 600px;
+  box-shadow: var(--shadow-card);
+  position: relative;
+}
+.modal-close {
+  color: var(--cocoa-fade);
+  position: absolute;
+  right: 20px;
+  top: 15px;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+}
+.modal-close:hover,
+.modal-close:focus {
+  color: var(--caramel);
+  text-decoration: none;
+  cursor: pointer;
+}
+.modal-body p {
+  color: var(--cocoa-soft);
+  margin-bottom: 12px;
+  font-size: 0.95rem;
+}
