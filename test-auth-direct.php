@@ -15,8 +15,8 @@ $data = [
                 ] 
             ], 
             "payment_method_types" => [ "card", "gcash", "paymaya" ], 
-            "success_url" => "http://localhost/crumb-cream-main/pay.php", 
-            "cancel_url" => "http://localhost/crumb-cream-main/pay.php", 
+            "success_url" => "http://localhost/crumb-cream-main/checkout.php", 
+            "cancel_url" => "http://localhost/crumb-cream-main/checkout.php", 
             "reference_number" => "TEST-" . date("YmdHis") . "-" . rand(1000, 9999), 
             "description" => "Test" 
         ] 

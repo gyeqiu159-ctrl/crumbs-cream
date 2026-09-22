@@ -7,6 +7,17 @@ $site = [
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- PWA Setup -->
+    <link rel="manifest" href="/crumbs-cream-main/manifest.json">
+    <meta name="theme-color" content="#333333">
+    <link rel="apple-touch-icon" href="/crumbs-cream-main/images/icons/icon-192x192.png">
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/crumbs-cream-main/sw.js');
+            });
+        }
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Terms and Conditions | Crumb & Cream</title>
@@ -57,7 +68,7 @@ $site = [
                     <li><a href="index.php#about" class="nav-link">About</a></li>
                     <li><a href="index.php#product" class="nav-link">Product</a></li>
                     <li><a href="index.php#why-us" class="nav-link">Why Us</a></li>
-                    <li><a href="index.php#reviews" class="nav-link">Reviews</a></li>
+                    <!-- <li><a href="index.php#reviews" class="nav-link">Reviews</a></li> -->
                     <li><a href="index.php#faq" class="nav-link">FAQ</a></li>
                     <li><a href="index.php#contact" class="nav-link">Contact</a></li>
                 </ul>
@@ -116,7 +127,7 @@ $site = [
                 <ul class="footer-links">
                     <li><a href="index.php#home">Home</a></li>
                     <li><a href="index.php#product">Product</a></li>
-                    <li><a href="index.php#reviews">Reviews</a></li>
+                    <!-- <li><a href="index.php#reviews">Reviews</a></li> -->
                     <li><a href="index.php#faq">FAQ</a></li>
                     <li><a href="index.php#contact">Contact</a></li>
                     <li><a href="terms.php">Terms & Conditions</a></li>

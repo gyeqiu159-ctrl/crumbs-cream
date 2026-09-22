@@ -24,6 +24,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$notSetUp) {
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- PWA Setup -->
+    <link rel="manifest" href="/crumbs-cream-main/manifest.json">
+    <meta name="theme-color" content="#333333">
+    <link rel="apple-touch-icon" href="/crumbs-cream-main/images/icons/icon-192x192.png">
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/crumbs-cream-main/sw.js');
+            });
+        }
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Login | Crumb & Cream</title>

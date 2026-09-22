@@ -35,8 +35,8 @@ $data = [
                 ] 
             ], 
             "payment_method_types" => [ "card", "gcash", "paymaya" ], 
-            "success_url" => "http://localhost/crumb-cream-main/pay.php?order_id=" . $orderId . "&test_success=1", 
-            "cancel_url" => "http://localhost/crumb-cream-main/pay.php?order_id=" . $orderId, 
+            "success_url" => "http://localhost/crumb-cream-main/checkout.php?order_id=" . $orderId . "&test_success=1", 
+            "cancel_url" => "http://localhost/crumb-cream-main/checkout.php?order_id=" . $orderId, 
             "reference_number" => "TEST-" . $orderId . "-" . time(), 
             "description" => "Test Order #" . $orderId 
         ] 

@@ -109,6 +109,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['order_inquiry'])) {
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- PWA Setup -->
+    <link rel="manifest" href="/crumbs-cream-main/manifest.json">
+    <meta name="theme-color" content="#333333">
+    <link rel="apple-touch-icon" href="/crumbs-cream-main/images/icons/icon-192x192.png">
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/crumbs-cream-main/sw.js')
+                    .then(registration => {
+                        console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                    })
+                    .catch(error => {
+                        console.log('ServiceWorker registration failed: ', error);
+                    });
+            });
+        }
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Crumb & Cream | Handcrafted Graham Bars</title>
@@ -149,7 +166,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['order_inquiry'])) {
                     <li><a href="#about" class="nav-link">About</a></li>
                     <li><a href="#product" class="nav-link">Product</a></li>
                     <li><a href="#why-us" class="nav-link">Why Us</a></li>
-                    <li><a href="#reviews" class="nav-link">Reviews</a></li>
+                    <!-- <li><a href="#reviews" class="nav-link">Reviews</a></li> -->
                     <li><a href="#faq" class="nav-link">FAQ</a></li>
                     <li><a href="#contact" class="nav-link">Contact</a></li>
                 </ul>
@@ -379,32 +396,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['order_inquiry'])) {
                 <span class="eyebrow">Testimonials</span>
                 <h2>What Our Customers Say</h2>
             </div>
-
             <div class="review-grid">
-                <div class="review-card reveal">
-                    <div class="stars">★★★★★</div>
-                    <p>"Super creamy and delicious! The graham layers give it the perfect crunch."</p>
-                    <div class="reviewer">
-                        <div class="reviewer-avatar">M</div>
-                        <div class="reviewer-name">Maria</div>
-                    </div>
-                </div>
-                <div class="review-card reveal reveal-delay-1">
-                    <div class="stars">★★★★★</div>
-                    <p>"Perfect for merienda! Will definitely order again."</p>
-                    <div class="reviewer">
-                        <div class="reviewer-avatar">A</div>
-                        <div class="reviewer-name">Angela</div>
-                    </div>
-                </div>
-                <div class="review-card reveal reveal-delay-2">
-                    <div class="stars">★★★★★</div>
-                    <p>"Simple, affordable, and really tasty!"</p>
-                    <div class="reviewer">
-                        <div class="reviewer-avatar">J</div>
-                        <div class="reviewer-name">John</div>
-                    </div>
-                </div>
+                <p style="grid-column: 1 / -1; text-align: center; color: var(--text-muted);">No reviews</p>
             </div>
         </div>
     </section>
@@ -512,8 +505,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['order_inquiry'])) {
                         <?php echo htmlspecialchars($orderFeedback['message']); ?>
                         <?php if ($orderFeedback['type'] === 'success' && $orderFeedback['order_id']): ?>
                             <div style="margin-top:12px;">
-                                <a href="pay.php?order_id=<?php echo (int) $orderFeedback['order_id']; ?>" class="btn btn-primary">
-                                    Scan to Pay via GCash / Maya / Bank
+                                <a href="checkout.php?order_id=<?php echo (int) $orderFeedback['order_id']; ?>" class="btn btn-primary">
+                                    Proceed to Checkout
                                 </a>
                             </div>
                         <?php endif; ?>
@@ -702,7 +695,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['order_inquiry'])) {
                 <ul class="footer-links">
                     <li><a href="#home">Home</a></li>
                     <li><a href="#product">Product</a></li>
-                    <li><a href="#reviews">Reviews</a></li>
+                    <!-- <li><a href="#reviews">Reviews</a></li> -->
                     <li><a href="#faq">FAQ</a></li>
                     <li><a href="#contact">Contact</a></li>
                     <li><a href="terms.php">Terms & Conditions</a></li>
